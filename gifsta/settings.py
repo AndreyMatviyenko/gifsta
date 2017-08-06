@@ -108,7 +108,7 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": "/home/denys/projects/gifsta",
+        "LOCATION": "/home/andrey/_Projects/gifsta",
     }
 }
 

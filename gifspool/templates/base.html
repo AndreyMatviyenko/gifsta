@@ -9,7 +9,7 @@
 
     <meta charset="utf-8">
 
-    <title>Заголовок</title>
+    <title>Gifsta | Лучшие гифки, анимации</title>
     <meta name="description" content="">
 
     <!-- Bootstrap v3.3.4 Grid Styles -->
@@ -53,93 +53,96 @@
     <header class="main-header">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-lg-4 col-md-2 col-sm-2 col-xs-4">
+                <div class="col-lg-4 col-md-2 col-sm-2 col-xs-3">
                     <div class="logo-wrap">
-                        <a class="logo" href="/"><img src="{% static 'img/logo.svg' %}" alt=""></a>
+                        <a class="logo" href="/"><img src="{% static 'img/logo.svg' %}" alt="Gifsta | Лучшие гифки, анимации"></a>
                     </div>
-                </div>              
-                <div class="col-lg-4 col-md-5 col-sm-5 hidden-xs">
-                    <form class="search-form" method="post" target="_top">{% csrf_token %}
-                        <div class="search-bar" data-reactid="63">
-                            <input class="search-input" name="tags" required="" placeholder="Enter #hashtags">
-                            <button class="btn-search" type="submit" name="submit" value="search"><i class="fa fa-search"></i></button>
+                </div>
+                <div class="col-lg-4 col-md-5 col-sm-5 col-xs-3">
+                    <span class="search-icon"></span>
+                    <form class="search-form" action="gifs/search/" method="get" target="_top">{% csrf_token %}
+                        <div class="search-bar">
+                            <input class="search-input" placeholder="Enter #hashtags" name="searchText" required="">
+                            <button class="btn-search" type="submit"><i class="fa fa-search"></i></button>
                         </div>
                     </form>
                 </div>
                 {% if not logged %}
-                <div class="col-lg-4 col-md-5 col-sm-5 col-xs-8">
+                <div class="col-lg-4 col-md-5 col-sm-5 col-xs-6">
                     <div class="login_wrap">
-                        <a href="/login" class="btn btn-main">Войти</a>
+                        <a href="/login" class="btn btn-main btn-with-icon"><span>Войти</span><i class="fa fa-sign-in" aria-hidden="true"></i></a>
                     </div>                  
                 </div>
                 {% endif %}
                 {% if logged %}
-                <div class="col-lg-4 col-md-5 col-sm-5 col-xs-8">
+                <div class="col-lg-4 col-md-5 col-sm-5 col-xs-6">
                     <div class="login_wrap">
-                        <a href="/upload" id="btn-upload" class="btn btn-main">Загрузить</a>
-                        <a href="/logout" id="btn-logout" class="btn btn-main">Выйти</a>
+                        <a href="/upload" class="btn btn-main btn-with-icon"><span>Загрузить</span><i class="fa fa-cloud-upload" aria-hidden="true"></i></a>
+                        <a href="/logout" class="btn btn-main btn-with-icon"><span>Выйти</span><i class="fa fa-sign-in" aria-hidden="true"></i></a>
                     </div>                  
                 </div>
-                
                 {% endif %}
             </div>
         </div>
     </header>
 
     <section class="section--filter">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <span class="select-wrap">
-                        <span>
-                            Лучшие
-                        </span>
-                        <ul>
-                            <li>
-                                <a href="/best/day/">За 24 часа</a>
-                            </li>
-                            <li>
-                                <a href="/best/week/">За неделю</a>
-                            </li>
-                            <li>
-                                <a href="/best/month/">За месяц</a>
-                            </li>
-                        </ul>
-                    </span>
-                    <span class="select-wrap">
-                        <span>
-                            Категории
-                        </span>
-                        <ul>
-                            <!-- <li>
-                                <a href="#">Вирусные</a>
-                            </li>
-                            <li>
-                                <a href="#">Смешные</a>
-                            </li>
-                            <li>
-                                <a href="#">Шокирующие</a>
-                            </li>
-                            <li>
-                                <a href="#">Милые</a>
-                            </li> -->
-                            {% for category in categories %}
-                                <li>
-                                    <a href="/categories/{{ category.name }}">{{ category.site_name }}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </span>
-                </div>
-            </div>
-        </div>
+        <span class="select-wrap">
+            <span>
+                Лучшие <i class="fa fa-chevron-down" aria-hidden="true"></i>
+            </span>
+            <ul>
+                <li>
+                    <a href="/best/day/">За 24 часа</a>
+                </li>
+                <li>
+                    <a href="/best/week/">За неделю</a>
+                </li>
+                <li>
+                    <a href="/best/month/">За месяц</a>
+                </li>
+            </ul>
+        </span>
+        <span class="select-wrap">
+            <span>
+                Категории <i class="fa fa-chevron-down" aria-hidden="true"></i>
+            </span>
+            <ul>
+                {% for category in categories %}
+                    <li>
+                        <a href="/categories/{{ category.name }}">{{ category.site_name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </span>
     </section>
     
     <main>
         {% block content %}
         {% endblock %}
     </main>
-    
+
+    <template id="gif-player">
+      <div class="gif-player">
+        <a class="source" v-bind:href="href">
+          <image v-if="isGif" v-bind:src="src" autoplay="false"></image>
+          <video v-if="isVideo" v-bind:loop="loop != null" v-on:mouseover="play()" v-on:mouseout="pause()">
+            <source v-bind:src="src"/>
+          </video>
+        </a>
+        <div class="progress-wrap">
+            <div class="progress" v-if="isVideo" v-bind:style="{ width: progress * 100 + '%'}"></div>       
+        </div>
+        <div class="controls" v-if="isVideo && controls != null">
+          <button class="play" v-on:click="play"><i class="fa fa-play"></i></button>
+          <button class="pause" v-on:click="pause"><i class="fa fa-pause"></i></button>
+<!--           <span class="statistics">
+            {{currentTime}} / {{durationTime}}
+          </span> -->
+          <button class="reset" v-on:click="reset"><i class="fa fa-refresh"></i></button>
+        </div>
+      </div>
+    </template>
     
 
     <footer class="main-footer">
@@ -173,8 +176,9 @@
     <script src="libs/respond/respond.min.js"></script>
     <![endif]-->
 
-    <script src="{% static 'js/common.min.js' %}"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.3/vue.min.js"></script>
+    <script src="https://cdn.rawgit.com/jrue/Vimeo-jQuery-API/master/src/jquery.vimeo.api.js"></script>
+    <script src="{% static 'js/babel.js' %}"></script> 
     
 </body>
 </html>

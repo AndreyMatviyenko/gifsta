@@ -3,3 +3,4 @@ venv
 staticfiles
 .env
 /home/denys/projects/gifsta/media
+/gifsta/settings.py
